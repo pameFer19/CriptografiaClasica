@@ -14,8 +14,8 @@ public class UI extends JFrame {
     private JTextArea descripcion;
     private TiposCifrado metodo;
 
-    private static final Font FONT_GENERAL = new Font("Segoe UI", Font.PLAIN, 24);
-    private static final Font FONT_TITULO = new Font("Segoe UI", Font.BOLD, 18);
+    private static final Font FONT_GENERAL = new Font("Century Gothic", Font.PLAIN, 24);
+    private static final Font FONT_TITULO = new Font("Consolas", Font.BOLD, 18);
     private static final Font FONT_DESC = new Font("Segoe UI", Font.ITALIC, 22);
 
     private final Color PRIMARY = new Color(219, 150, 147);
@@ -34,7 +34,6 @@ public class UI extends JFrame {
         add(crearPanelCentral(), BorderLayout.CENTER);
     }
 
-    // ================== PANEL SUPERIOR ==================
     private JPanel crearPanelSuperior() {
         JPanel panelTop = new JPanel();
         panelTop.setLayout(new BoxLayout(panelTop, BoxLayout.Y_AXIS));
@@ -45,11 +44,20 @@ public class UI extends JFrame {
 
         ButtonGroup grupo = new ButtonGroup();
 
-        panelMetodos.add(crearBotonMetodo("Cesar", TiposCifrado.CESAR, grupo));
-        panelMetodos.add(crearBotonMetodo("Atbash", TiposCifrado.ATBASH, grupo));
-        panelMetodos.add(crearBotonMetodo("Vigenere", TiposCifrado.VIGENERE, grupo));
-        panelMetodos.add(crearBotonMetodo("Rail Fence", TiposCifrado.RAIL, grupo));
-        panelMetodos.add(crearBotonMetodo("Playfair", TiposCifrado.PLAYFAIR, grupo));
+        JLabel titulo = new JLabel("Criptografía Clásica", SwingConstants.CENTER);
+        titulo.setFont(new Font("Times New Roman", Font.BOLD, 26));
+        titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        JLabel subtitulo = new JLabel("Métodos de cifrado: ", SwingConstants.CENTER);
+        subtitulo.setFont(new Font("Century Gothic", Font.PLAIN, 22));
+        subtitulo.setForeground(Color.DARK_GRAY);
+        subtitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        panelMetodos.add(crearBotonMetodo("•Cesar", TiposCifrado.CESAR, grupo));
+        panelMetodos.add(crearBotonMetodo("•Atbash", TiposCifrado.ATBASH, grupo));
+        panelMetodos.add(crearBotonMetodo("•Vigenere", TiposCifrado.VIGENERE, grupo));
+        panelMetodos.add(crearBotonMetodo("•Rail Fence", TiposCifrado.RAIL, grupo));
+        panelMetodos.add(crearBotonMetodo("•Playfair", TiposCifrado.PLAYFAIR, grupo));
 
         descripcion = new JTextArea("Selecciona un tipo de cifrado");
         descripcion.setFont(FONT_DESC);
@@ -59,8 +67,15 @@ public class UI extends JFrame {
         descripcion.setOpaque(false);
         descripcion.setBorder(new EmptyBorder(5, 15, 10, 15));
 
+        panelTop.add(titulo);
+        panelTop.add(Box.createVerticalStrut(5)); // espacio
+
+        panelTop.add(subtitulo);
+        panelTop.add(Box.createVerticalStrut(10));
+
         panelTop.add(panelMetodos);
         panelTop.add(descripcion);
+
 
         return panelTop;
     }
@@ -91,7 +106,7 @@ public class UI extends JFrame {
         return btn;
     }
 
-    // ================== PANEL CENTRAL ==================
+
     private JPanel crearPanelCentral() {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -166,7 +181,7 @@ public class UI extends JFrame {
         return panel;
     }
 
-    // ================== LÓGICA ==================
+
     private void seleccionarMetodo(TiposCifrado m) {
         metodo = m;
         descripcion.setText(m.getDescripcion());
