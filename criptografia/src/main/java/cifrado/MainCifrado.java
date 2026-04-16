@@ -1,46 +1,77 @@
 package cifrado;
 import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
+import static cifrado.MetodosCifrado.*;
 
 public class MainCifrado extends JFrame {
 
     private JTextArea inputText;
     private JTextArea outputText;
-    private JLabel descripcion;
-    private String metodo = "";
+    private JTextArea descripcion;
+    private TiposCifrado metodo;
 
     public MainCifrado() {
-        setTitle("Aplicación de Cifrado");
-        setSize(500, 400);
+        setTitle("🔐 Aplicación de Cifrado");
+        setSize(600, 500);
+        setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(10, 10));
 
-        inputText = new JTextArea();
-        outputText = new JTextArea();
-        outputText.setEditable(false);
+        // Fuente general
+        Font font = new Font("Segoe UI", Font.PLAIN, 14);
 
-        // Panel central
-        JPanel panelCentro = new JPanel(new GridLayout(2,1));
-        panelCentro.add(new JScrollPane(inputText));
-        panelCentro.add(new JScrollPane(outputText));
-
-        add(panelCentro, BorderLayout.CENTER);
-
-        // Botón cifrar
-        JButton btnCifrar = new JButton("Cifrar");
-        btnCifrar.addActionListener(e -> cifrarTexto());
-        add(btnCifrar, BorderLayout.SOUTH);
-
-        //descripcion
-        descripcion = new JLabel("Selecciona un tipo de cifrado", SwingConstants.CENTER);
-        descripcion.setFont(new Font("Arial", Font.ITALIC, 14));
-        descripcion.setBorder(BorderFactory.createEmptyBorder(10,10,10,10));
+        // ================== DESCRIPCIÓN ==================
+        descripcion = new JTextArea("Selecciona un tipo de cifrado desde el menú");
+        descripcion.setFont(new Font("Segoe UI", Font.ITALIC, 13));
+        descripcion.setLineWrap(true);
+        descripcion.setWrapStyleWord(true);
+        descripcion.setEditable(false);
+        descripcion.setOpaque(false);
+        descripcion.setBorder(new EmptyBorder(10, 10, 10, 10));
 
         add(descripcion, BorderLayout.NORTH);
 
-        // Menú opciones
+        // ================== ÁREAS DE TEXTO ==================
+        inputText = new JTextArea();
+        inputText.setFont(font);
+        inputText.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        outputText = new JTextArea();
+        outputText.setFont(font);
+        outputText.setEditable(false);
+        outputText.setBackground(new Color(245, 245, 245));
+        outputText.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        // Panel con títulos
+        JPanel panelCentro = new JPanel(new GridLayout(2, 1, 10, 10));
+        panelCentro.setBorder(new EmptyBorder(10, 10, 10, 10));
+
+        panelCentro.add(crearPanel("Texto de entrada", inputText));
+        panelCentro.add(crearPanel("Texto cifrado", outputText));
+
+        add(panelCentro, BorderLayout.CENTER);
+
+        // ================== BOTÓN ==================
+        JButton btnCifrar = new JButton("Cifrar");
+        btnCifrar.setFont(new Font("Segoe UI", Font.BOLD, 14));
+        btnCifrar.setBackground(new Color(52, 152, 219));
+        btnCifrar.setForeground(Color.WHITE);
+        btnCifrar.setFocusPainted(false);
+        btnCifrar.setBorder(new EmptyBorder(10, 20, 10, 20));
+
+        btnCifrar.addActionListener(e -> cifrarTexto());
+
+        JPanel panelSur = new JPanel();
+        panelSur.add(btnCifrar);
+
+        add(panelSur, BorderLayout.SOUTH);
+
+        // ================== MENÚ ==================
         JMenuBar menuBar = new JMenuBar();
-        JMenu menu = new JMenu("Opciones");
+        JMenu menu = new JMenu("Métodos");
 
         JMenuItem cesar = new JMenuItem("Cifrado César");
         JMenuItem atbash = new JMenuItem("Cifrado Atbash");
@@ -48,17 +79,11 @@ public class MainCifrado extends JFrame {
         JMenuItem rail = new JMenuItem("Cifrado Rail Fence");
         JMenuItem playfair = new JMenuItem("Cifrado Playfair");
 
-        cesar.addActionListener(e ->{ metodo = "cesar";
-        descripcion.setText("El cifrado César es un método de encriptación" +
-                "que consiste en sustituir letras desplazándolas un número fijo " +
-                "de posiciones en el alfabeto, sentando así las bases de las técnicas" +
-                " criptográficas modernas.");
-        });
-
-        atbash.addActionListener(e -> metodo = "atbash");
-        vigenere.addActionListener(e -> metodo = "vigenere");
-        rail.addActionListener(e -> metodo = "rail");
-        playfair.addActionListener(e -> metodo = "playfair");
+        cesar.addActionListener(e -> seleccionarMetodo(TiposCifrado.CESAR));
+        atbash.addActionListener(e -> seleccionarMetodo(TiposCifrado.ATBASH));
+        vigenere.addActionListener(e -> seleccionarMetodo(TiposCifrado.VIGENERE));
+        rail.addActionListener(e -> seleccionarMetodo(TiposCifrado.RAIL));
+        playfair.addActionListener(e -> seleccionarMetodo(TiposCifrado.PLAYFAIR));
 
         menu.add(cesar);
         menu.add(atbash);
@@ -70,65 +95,41 @@ public class MainCifrado extends JFrame {
         setJMenuBar(menuBar);
     }
 
+    // Panel con borde y título
+    private JPanel crearPanel(String titulo, JTextArea area) {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setBorder(new TitledBorder(new LineBorder(Color.GRAY), titulo));
+        panel.add(new JScrollPane(area), BorderLayout.CENTER);
+        return panel;
+    }
+
+    private void seleccionarMetodo(TiposCifrado m) {
+        metodo = m;
+        descripcion.setText(m.getDescripcion());
+    }
+
     private void cifrarTexto() {
         String texto = inputText.getText();
-        String resultado = "";
+        String resultado;
 
-        switch (metodo) {
-            case "cesar":
-                resultado = cifradoCesar(texto, 3);
-
-                break;
-            case "atbash":
-                resultado = cifradoAtbash(texto);
-                break;
-            case "vigenere":
-                resultado = "Vigenere (falta implementar)";
-                break;
-            case "rail":
-                resultado = "Rail Fence (falta implementar)";
-                break;
-            case "playfair":
-                resultado = "Playfair (falta implementar)";
-                break;
-            default:
-                resultado = "Selecciona un método";
+        if (metodo == null) {
+            resultado = "⚠ Selecciona un método";
+        } else {
+            switch (metodo) {
+                case CESAR:
+                    resultado = cifradoCesar(texto, 3);
+                    break;
+                case ATBASH:
+                    resultado = cifradoAtbash(texto);
+                    break;
+                default:
+                    resultado = "Método aún no implementado";
+            }
         }
 
         outputText.setText(resultado);
     }
 
-    // CIFRADO CESAR
-    private String cifradoCesar(String texto, int desplazamiento) {
-        StringBuilder resultado = new StringBuilder();
-
-        for (char c : texto.toCharArray()) {
-            if (Character.isLetter(c)) {
-                char base = Character.isUpperCase(c) ? 'A' : 'a';
-                char cifrado = (char) ((c - base + desplazamiento) % 26 + base);
-                resultado.append(cifrado);
-            } else {
-                resultado.append(c);
-            }
-        }
-        return resultado.toString();
-    }
-
-    // CIFRADO ATBASH
-    private String cifradoAtbash(String texto) {
-        StringBuilder resultado = new StringBuilder();
-
-        for (char c : texto.toCharArray()) {
-            if (Character.isLetter(c)) {
-                char base = Character.isUpperCase(c) ? 'A' : 'a';
-                char cifrado = (char) (base + (25 - (c - base)));
-                resultado.append(cifrado);
-            } else {
-                resultado.append(c);
-            }
-        }
-        return resultado.toString();
-    }
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
