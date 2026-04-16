@@ -169,7 +169,8 @@ public class MetodosCifrado {
     public static int[] buscar(char[][] m, char c) {
         for (int i = 0; i < 5; i++)
             for (int j = 0; j < 5; j++)
-                if (m[i][j] == c) return new int[]{i, j};
+                if (m[i][j] == c)
+                    return new int[]{i, j};
         return null;
     }
 
@@ -252,6 +253,8 @@ public class MetodosCifrado {
 
         return res.toString();
     }
+
+
 
 
 }
