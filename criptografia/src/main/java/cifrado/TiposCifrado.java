@@ -1,24 +1,54 @@
 package cifrado;
 
 public enum TiposCifrado {
-    CESAR("Cifrado de Cesar \nEs un método de encriptación muy simple donde cada letra de un texto se desplaza un número fijo de posiciones en el alfabeto."),
-    ATBASH("Cifrado Atbash \nEs un método donde cada letra se sustituye por su opuesta en el alfabeto."),
-    VIGENERE("Cifrado Vigenere\nUsa una palabra clave para aplicar múltiples desplazamientos."),
-    RAIL("Cifrado Rail Fence\nReorganiza el texto en forma de zigzag."),
-    PLAYFAIR("Cifrado Playfair\nCifra pares de letras usando una matriz.");
 
+    CESAR(
+            "Cesar", "Caesar",
+            "Cifrado de Cesar\nEs un método de encriptación muy simple donde cada letra se desplaza un número fijo.",
+            "Caesar Cipher\nA simple encryption method where each letter is shifted by a fixed number."
+    ),
 
-    private String descripcion;
+    ATBASH(
+            "Atbash", "Atbash",
+            "Cifrado Atbash\nSustituye cada letra por su opuesta en el alfabeto.",
+            "Atbash Cipher\nEach letter is replaced by its opposite in the alphabet."
+    ),
 
-    TiposCifrado(String descripcion) {
-        this.descripcion = descripcion;
+    VIGENERE(
+            "Vigenere", "Vigenere",
+            "Cifrado Vigenere\nUsa una clave para cifrar el texto.",
+            "Vigenere Cipher\nUses a keyword to encrypt text."
+    ),
+
+    RAIL(
+            "Rail Fence", "Rail Fence",
+            "Cifrado Rail Fence\nReorganiza el texto en forma de zigzag.",
+            "Rail Fence Cipher\nRearranges text in a zigzag pattern."
+    ),
+
+    PLAYFAIR(
+            "Playfair", "Playfair",
+            "Cifrado Playfair\nUsa una matriz de letras para cifrar pares.",
+            "Playfair Cipher\nUses a letter matrix to encrypt pairs."
+    );
+
+    private String nombreES;
+    private String nombreEN;
+    private String descES;
+    private String descEN;
+
+    TiposCifrado(String nombreES, String nombreEN, String descES, String descEN) {
+        this.nombreES = nombreES;
+        this.nombreEN = nombreEN;
+        this.descES = descES;
+        this.descEN = descEN;
     }
 
-    public String getDescripcion() {
-        return descripcion;
+    public String getNombre(String idioma) {
+        return idioma.equals("ES") ? nombreES : nombreEN;
     }
 
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public String getDescripcion(String idioma) {
+        return idioma.equals("ES") ? descES : descEN;
     }
 }

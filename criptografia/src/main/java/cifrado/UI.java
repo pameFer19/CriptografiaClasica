@@ -6,13 +6,29 @@ import java.awt.*;
 
 import cifrado.TiposCifrado.*;
 import static cifrado.MetodosCifrado.*;
+//import static cifrado.ServicioCifrado.*;
 
 public class UI extends JFrame {
+
+    private java.util.List<JToggleButton> botonesMetodos = new java.util.ArrayList<>();
 
     private JTextArea inputText;
     private JTextArea outputText;
     private JTextArea descripcion;
     private TiposCifrado metodo;
+    private JTextField campoParametro;
+    private String idioma ="ES";
+
+    private JLabel titulo;
+    private JLabel subtitulo;
+    private JLabel lblParametro;
+
+    private JButton btnCifrar;
+    private JButton btnDescifrar;
+    private JButton btnLimpiar;
+
+    private TitledBorder borderEntrada;
+    private TitledBorder borderResultado;
 
     private static final Font FONT_GENERAL = new Font("Century Gothic", Font.PLAIN, 24);
     private static final Font FONT_TITULO = new Font("Consolas", Font.BOLD, 18);
@@ -23,15 +39,88 @@ public class UI extends JFrame {
 
     public UI() {
         setTitle("> Aplicación de Cifrado");
-        setSize(700, 550);
+        setSize(900, 600);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout(10, 10));
 
         getContentPane().setBackground(BG);
 
-        add(crearPanelSuperior(), BorderLayout.NORTH);
+        JPanel top = new JPanel(new BorderLayout());
+        top.add(crearBarraIdioma(), BorderLayout.NORTH);
+        top.add(crearPanelSuperior(), BorderLayout.CENTER);
+
+        add(top, BorderLayout.NORTH);
         add(crearPanelCentral(), BorderLayout.CENTER);
+    }
+
+    private JPanel crearBarraIdioma() {
+
+        JPanel barra = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        barra.setBackground(BG);
+
+        JLabel lbl = new JLabel("Idioma:");
+        lbl.setFont(FONT_GENERAL.deriveFont(Font.BOLD, 16f));
+
+        String[] opciones = {"Español", "English"};
+        JComboBox<String> cambio = new JComboBox<>(opciones);
+        cambio.setFont(FONT_GENERAL.deriveFont(16f));
+
+        cambio.addActionListener(e -> {
+            if (cambio.getSelectedIndex() == 0) {
+                idioma = "ES";
+            } else {
+                idioma = "EN";
+            }
+            actualizarIdioma();
+        });
+
+        barra.add(lbl);
+        barra.add(cambio);
+
+        return barra;
+    }
+
+    private void actualizarIdioma() {
+
+        int i = 0;
+        for (TiposCifrado tipo : TiposCifrado.values()) {
+            botonesMetodos.get(i).setText("•" + tipo.getNombre(idioma));
+            i++;
+        }
+
+        if (idioma.equals("ES")) {
+
+            titulo.setText("Criptografía Clásica");
+            subtitulo.setText("Métodos de cifrado:");
+            descripcion.setText("Selecciona un tipo de cifrado");
+
+            lblParametro.setText("Número / Clave:");
+
+            btnCifrar.setText("Cifrar");
+            btnDescifrar.setText("Descifrar");
+            btnLimpiar.setText("Limpiar");
+
+            borderEntrada.setTitle("Entrada");
+            borderResultado.setTitle("Resultado");
+
+        } else {
+
+            titulo.setText("Classical Cryptography");
+            subtitulo.setText("Cipher methods:");
+            descripcion.setText("Select a cipher method");
+
+            lblParametro.setText("Number / Key:");
+
+            btnCifrar.setText("Encrypt");
+            btnDescifrar.setText("Decrypt");
+            btnLimpiar.setText("Clear");
+
+            borderEntrada.setTitle("Input");
+            borderResultado.setTitle("Output");
+        }
+
+        repaint(); // refresca la UI
     }
 
     private JPanel crearPanelSuperior() {
@@ -44,20 +133,20 @@ public class UI extends JFrame {
 
         ButtonGroup grupo = new ButtonGroup();
 
-        JLabel titulo = new JLabel("Criptografía Clásica", SwingConstants.CENTER);
+        titulo = new JLabel("Criptografía Clásica", SwingConstants.CENTER);
         titulo.setFont(new Font("Times New Roman", Font.BOLD, 26));
         titulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        JLabel subtitulo = new JLabel("Métodos de cifrado: ", SwingConstants.CENTER);
+        subtitulo = new JLabel("Métodos de cifrado: ", SwingConstants.CENTER);
         subtitulo.setFont(new Font("Century Gothic", Font.PLAIN, 22));
         subtitulo.setForeground(Color.DARK_GRAY);
         subtitulo.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        panelMetodos.add(crearBotonMetodo("•Cesar", TiposCifrado.CESAR, grupo));
-        panelMetodos.add(crearBotonMetodo("•Atbash", TiposCifrado.ATBASH, grupo));
-        panelMetodos.add(crearBotonMetodo("•Vigenere", TiposCifrado.VIGENERE, grupo));
-        panelMetodos.add(crearBotonMetodo("•Rail Fence", TiposCifrado.RAIL, grupo));
-        panelMetodos.add(crearBotonMetodo("•Playfair", TiposCifrado.PLAYFAIR, grupo));
+        panelMetodos.add(crearBotonMetodo(TiposCifrado.CESAR, grupo));
+        panelMetodos.add(crearBotonMetodo(TiposCifrado.ATBASH, grupo));
+        panelMetodos.add(crearBotonMetodo(TiposCifrado.VIGENERE, grupo));
+        panelMetodos.add(crearBotonMetodo(TiposCifrado.RAIL, grupo));
+        panelMetodos.add(crearBotonMetodo(TiposCifrado.PLAYFAIR, grupo));
 
         descripcion = new JTextArea("Selecciona un tipo de cifrado");
         descripcion.setFont(FONT_DESC);
@@ -80,15 +169,17 @@ public class UI extends JFrame {
         return panelTop;
     }
 
-    private JToggleButton crearBotonMetodo(String texto, TiposCifrado metodo, ButtonGroup grupo) {
-        JToggleButton btn = new JToggleButton(texto);
+    private JToggleButton crearBotonMetodo(TiposCifrado metodo, ButtonGroup grupo) {
+
+        JToggleButton btn = new JToggleButton("•" + metodo.getNombre(idioma));
+
         btn.setFont(FONT_GENERAL);
         btn.setFocusPainted(false);
-        btn.setBorder(new EmptyBorder(8, 15, 8, 15));
 
         Color normal = Color.WHITE;
 
         btn.setBackground(normal);
+        btn.setForeground(Color.BLACK);
 
         btn.addChangeListener(e -> {
             if (btn.isSelected()) {
@@ -103,6 +194,8 @@ public class UI extends JFrame {
         btn.addActionListener(e -> seleccionarMetodo(metodo));
 
         grupo.add(btn);
+        botonesMetodos.add(btn);
+
         return btn;
     }
 
@@ -113,14 +206,29 @@ public class UI extends JFrame {
         panel.setBorder(new EmptyBorder(10, 20, 10, 20));
         panel.setBackground(BG);
 
+        JPanel panelConfig = new JPanel(new FlowLayout(FlowLayout.CENTER, 10,5));
+
         inputText = crearAreaTexto();
         outputText = crearAreaTexto();
         outputText.setEditable(false);
         outputText.setBackground(new Color(255, 225, 245));
+        panelConfig.setBackground(BG);
 
-        JButton btnCifrar = crearBotonAccion("Cifrar");
-        JButton btnDescifrar = crearBotonAccion("Descifrar");
-        JButton btnLimpiar = crearBotonSecundario("Limpiar");
+        campoParametro = new JTextField(5);
+        campoParametro.setFont((FONT_GENERAL));
+
+
+        lblParametro = new JLabel("Número / Clave: ", SwingConstants.CENTER);
+        lblParametro.setFont(FONT_GENERAL.deriveFont(Font.BOLD, 18f));
+        lblParametro.setForeground(Color.DARK_GRAY);
+
+        panelConfig.add(lblParametro);
+        panelConfig.add(campoParametro);
+        campoParametro.setPreferredSize(new Dimension(100, 30));
+
+        btnCifrar = crearBotonAccion("Cifrar");
+        btnDescifrar = crearBotonAccion("Descifrar");
+        btnLimpiar = crearBotonSecundario("Limpiar");
 
         btnCifrar.addActionListener(e -> procesarTexto(true));
         btnDescifrar.addActionListener(e -> procesarTexto(false));
@@ -133,11 +241,12 @@ public class UI extends JFrame {
         panelBotones.add(btnDescifrar);
         panelBotones.add(btnLimpiar);
 
-        panel.add(crearPanel("Entrada", inputText));
+        panel.add(panelConfig);
+        panel.add(crearPanel("Entrada", inputText, true));
         panel.add(Box.createVerticalStrut(15));
         panel.add(panelBotones);
         panel.add(Box.createVerticalStrut(15));
-        panel.add(crearPanel("Resultado", outputText));
+        panel.add(crearPanel("Resultado", outputText, false));
 
         return panel;
     }
@@ -169,12 +278,18 @@ public class UI extends JFrame {
         return btn;
     }
 
-    private JPanel crearPanel(String titulo, JTextArea area) {
+    private JPanel crearPanel(String tituloTexto, JTextArea area, boolean esEntrada) {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setBackground(BG);
 
-        TitledBorder border = new TitledBorder(titulo);
+        TitledBorder border = new TitledBorder(tituloTexto);
         border.setTitleFont(FONT_TITULO);
+
+        if (esEntrada) {
+            borderEntrada = border;
+        } else {
+            borderResultado = border;
+        }
 
         panel.setBorder(border);
         panel.add(new JScrollPane(area), BorderLayout.CENTER);
@@ -184,8 +299,15 @@ public class UI extends JFrame {
 
     private void seleccionarMetodo(TiposCifrado m) {
         metodo = m;
-        descripcion.setText(m.getDescripcion());
+        descripcion.setText(m.getDescripcion(idioma));
         limpiarCampos();
+
+        if (m == TiposCifrado.ATBASH) {
+            campoParametro.setEnabled(false);
+            campoParametro.setText("");
+        } else {
+            campoParametro.setEnabled(true);
+        }
     }
 
     private void limpiarCampos() {
@@ -194,37 +316,16 @@ public class UI extends JFrame {
     }
 
     private void procesarTexto(boolean cifrar) {
-        String texto = cifrar ? inputText.getText() : outputText.getText();
+
+        String texto = inputText.getText();
+        String parametro = campoParametro.getText();
 
         if (metodo == null) {
             outputText.setText("Selecciona un método");
             return;
         }
 
-        String resultado;
-
-        switch (metodo) {
-            case CESAR:
-                resultado = cifradoCesar(texto, cifrar ? 3 : -3);
-                break;
-            case ATBASH:
-                resultado = cifradoAtbash(texto);
-                break;
-            case VIGENERE:
-                resultado = cifrar ? cifradoVigenere(texto, "clave")
-                        : descifradoVigenere(texto, "clave");
-                break;
-            case RAIL:
-                resultado = cifrar ? cifradoRailFence(texto, 3)
-                        : descifradoRailFence(texto, 3);
-                break;
-            case PLAYFAIR:
-                resultado = cifrar ? cifradoPlayfair(texto, "clave")
-                        : descifradoPlayfair(texto, "clave");
-                break;
-            default:
-                resultado = "Método no implementado";
-        }
+        String resultado = ServicioCifrado.procesar(metodo, texto,parametro,cifrar);
 
         outputText.setText(resultado);
     }

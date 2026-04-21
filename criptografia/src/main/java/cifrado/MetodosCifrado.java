@@ -8,7 +8,13 @@ public class MetodosCifrado {
         for (char c : texto.toCharArray()) {
             if (Character.isLetter(c)) {
                 char base = Character.isUpperCase(c) ? 'A' : 'a';
-                char cifrado = (char) ((c - base + desplazamiento) % 26 + base);
+
+                int posicion = (c - base + desplazamiento) % 26;
+
+                // 🔥 ESTA LÍNEA ARREGLA TODO
+                if (posicion < 0) posicion += 26;
+
+                char cifrado = (char) (posicion + base);
                 resultado.append(cifrado);
             } else {
                 resultado.append(c);
@@ -74,6 +80,8 @@ public class MetodosCifrado {
     public static String cifradoRailFence(String texto, int filas) {
         if (filas <= 1) return texto;
 
+        texto = texto.replace(" ", ""); // ✅ CORRECCIÓN
+
         StringBuilder[] rail = new StringBuilder[filas];
         for (int i = 0; i < filas; i++) rail[i] = new StringBuilder();
 
@@ -97,6 +105,8 @@ public class MetodosCifrado {
 
     public static String descifradoRailFence(String texto, int filas) {
         if (filas <= 1) return texto;
+
+        texto = texto.replace(" ", ""); // ✅ CORRECCIÓN
 
         boolean[][] marca = new boolean[filas][texto.length()];
         int fila = 0;
@@ -122,20 +132,7 @@ public class MetodosCifrado {
             }
         }
 
-        StringBuilder finalText = new StringBuilder();
-        fila = 0;
-        abajo = true;
-
-        for (int i = 0; i < texto.length(); i++) {
-            finalText.append(resultado[i]);
-
-            if (fila == 0) abajo = true;
-            else if (fila == filas - 1) abajo = false;
-
-            fila += abajo ? 1 : -1;
-        }
-
-        return finalText.toString();
+        return new String(resultado);
     }
 
     public static char[][] generarMatriz(String clave) {
